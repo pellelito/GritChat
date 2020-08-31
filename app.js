@@ -8,6 +8,7 @@
 (function(){
     
 let peer = null;
+let con = null;    
 
 
 // Sets user name on page
@@ -35,13 +36,31 @@ peer.on('open', peerOnOpen);
 peer.on('error', peerOnError)
 
 const connectToPeerClick = (el) => {
+    
     //get remote user ID
-    let peerId = el.target.textContent;
+    const peerId = el.target.textContent;
     console.log(peerId);  
+    
+    //Test if con exits and the close it
+    con && con.close();
+    
     //Open connection to remote user
-    const con = peer.connect(peerId);
+    con = peer.connect(peerId);
     con.on('open', () => {
-        console.log('conn open');
+        console.log('con open');
+        
+        
+        //custom event
+        const event = new CustomEvent('peerChanged', { detail:{peerId: peerId},});
+        document.dispatchEvent(event);
+        
+        //let conUser = document.querySelectorAll('.connect-button');
+        //console.log(conUser.filter(word => word.equals === peerId));
+        //document.getElementsByClassName("connect-button").classList.add("connect-button.connected");
+        
+        
+        // remove
+        
     });
     
 }
@@ -52,6 +71,7 @@ document.querySelector(".list-all-peers-button").addEventListener("click", () =>
   
     
     const peersEl = document.querySelector('.peers');
+    peersEl.firstChild && peersEl.firstChild.remove();
     peer.listAllPeers((peers) => {
              
         const ul = document.createElement('ul');
@@ -74,5 +94,18 @@ document.querySelector(".list-all-peers-button").addEventListener("click", () =>
         peersEl.appendChild(ul);
     });
 });
+document.addEventListener('peerChanged',(e) => {
+    const peerId = e.detail.peerId;
+    console.log("peerID = " + peerId);
     
+    //let 
+    //document.querySelectorAll('.connect-button').forEach(() => {
+   //        e.classList.remove('connected');
+    //});
+    
+    const button = document.querySelector(`.connect-button.peerId-${peerId}`);
+    console.log(button);
+    //button.classList.add('connected');
+    
+})    
 })();
