@@ -3,6 +3,12 @@
 * A simple videochat app, made for a class in Javascript aug-sept 2020 *
 * Enjoy!!                                                              * 
 ************************************************************************/
+//Global variables
+//Self invoked anonymous function 
+(function(){
+    
+let peer = null;
+
 
 // Sets user name on page
 const peerOnOpen = (id) => {document.querySelector('.my-peer-id').innerHTML= id};
@@ -12,9 +18,9 @@ const peerOnError = (error) => {console.log(error)};
 // Get user
 let myPeerId;
 let getUser = () => {
-    let person = prompt("Please enter your name:", "Mr Potatohead");
+    let person = prompt("Please enter your name:", "Mr_Potatohead");
   if (person == null || person == "") {
-    myPeerId = "Mr Potatohead";
+    myPeerId = "Mr_Potatohead";
   } else {
     myPeerId = person;
   }   
@@ -22,11 +28,23 @@ let getUser = () => {
 document.addEventListener('load', getUser()); 
 
 // Conect to peer server
-let peer = new Peer(myPeerId,{ host: "glajan.com", port:8443, path: "/myapp", secure: true});
+peer = new Peer(myPeerId,{ host: "glajan.com", port:8443, path: "/myapp", secure: true});
 
 // Handle Peer events
 peer.on('open', peerOnOpen);
 peer.on('error', peerOnError)
+
+const connectToPeerClick = (el) => {
+    //get remote user ID
+    let peerId = el.target.textContent;
+    console.log(peerId);  
+    //Open connection to remote user
+    const con = peer.connect(peerId);
+    con.on('open', () => {
+        console.log('conn open');
+    });
+    
+}
 
 
 //Refreshes online friends
@@ -48,6 +66,7 @@ document.querySelector(".list-all-peers-button").addEventListener("click", () =>
                 button.innerText = peerId;
                 button.className = "connect-button";
                 button.classList.add('peerId-${peerId}');
+                button.addEventListener('click', connectToPeerClick); 
                 li.appendChild(button);
                 ul.appendChild(li);
             
@@ -55,3 +74,5 @@ document.querySelector(".list-all-peers-button").addEventListener("click", () =>
         peersEl.appendChild(ul);
     });
 });
+    
+})();
