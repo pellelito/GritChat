@@ -54,13 +54,6 @@ const connectToPeerClick = (el) => {
         const event = new CustomEvent('peerChanged', { detail:{peerId: peerId},});
         document.dispatchEvent(event);
         
-        //let conUser = document.querySelectorAll('.connect-button');
-        //console.log(conUser.filter(word => word.equals === peerId));
-        //document.getElementsByClassName("connect-button").classList.add("connect-button.connected");
-        
-        
-        // remove
-        
     });
     
 }
@@ -85,7 +78,7 @@ document.querySelector(".list-all-peers-button").addEventListener("click", () =>
                 const button = document.createElement('button');
                 button.innerText = peerId;
                 button.className = "connect-button";
-                button.classList.add('peerId-${peerId}');
+                button.classList.add(`peerId-${peerId}`);
                 button.addEventListener('click', connectToPeerClick); 
                 li.appendChild(button);
                 ul.appendChild(li);
@@ -96,16 +89,17 @@ document.querySelector(".list-all-peers-button").addEventListener("click", () =>
 });
 document.addEventListener('peerChanged',(e) => {
     const peerId = e.detail.peerId;
-    console.log("peerID = " + peerId);
+    //console.log("peerID = " + peerId);
+     
+    document.querySelectorAll('.connect-button').forEach((el) => {
+           el.classList.remove('connected');
+    });
     
-    //let 
-    //document.querySelectorAll('.connect-button').forEach(() => {
-   //        e.classList.remove('connected');
-    //});
+    const conUser = document.querySelector(`.connect-button.peerId-${peerId}`);
     
-    const button = document.querySelector(`.connect-button.peerId-${peerId}`);
-    console.log(button);
-    //button.classList.add('connected');
+    //document.querySelectorAll(`.connect-button peerId-${peerId}`).classList.add('connected');
+    //console.log(button);
+    conUser.classList.add('connected');
     
 })    
 })();
