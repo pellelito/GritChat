@@ -1,105 +1,167 @@
 /***********************************************************************
-* Author: Pellelito                                                    *
-* A simple videochat app, made for a class in Javascript aug-sept 2020 *
-* Enjoy!!                                                              * 
-************************************************************************/
-//Global variables
+ * Author: Pellelito                                                    *
+ * A simple videochat app, made for a class in Javascript aug-sept 2020 *
+ * Enjoy!!                                                              * 
+ ************************************************************************/
+
+
+
 //Self invoked anonymous function 
-(function(){
-    
-let peer = null;
-let con = null;    
+(function () {
+
+    //"Global" variables
+    let peer = null;
+    let con = null;
 
 
-// Sets user name on page
-const peerOnOpen = (id) => {document.querySelector('.my-peer-id').innerHTML= id};
-// Handles errors
-const peerOnError = (error) => {console.log(error)};
+    // Sets user name on page
+    const peerOnOpen = (id) => {
+        document.querySelector('.my-peer-id').innerHTML = id
+    };
 
-// Get user
-let myPeerId;
-let getUser = () => {
-    let person = prompt("Please enter your name:", "Mr_Potatohead");
-  if (person == null || person == "") {
-    myPeerId = "Mr_Potatohead";
-  } else {
-    myPeerId = person;
-  }   
-}
-document.addEventListener('load', getUser()); 
+    //opens connection from remote user
+    const peerOnConnection = (dataConnection) => {
 
-// Conect to peer server
-peer = new Peer(myPeerId,{ host: "glajan.com", port:8443, path: "/myapp", secure: true});
-
-// Handle Peer events
-peer.on('open', peerOnOpen);
-peer.on('error', peerOnError)
-
-const connectToPeerClick = (el) => {
-    
-    //get remote user ID
-    const peerId = el.target.textContent;
-    console.log(peerId);  
-    
-    //Test if con exits and the close it
-    con && con.close();
-    
-    //Open connection to remote user
-    con = peer.connect(peerId);
-    con.on('open', () => {
-        console.log('con open');
+        //First clears and then opens new connection
+        con && con.close();
+        con = dataConnection;
         
-        
-        //custom event
-        const event = new CustomEvent('peerChanged', { detail:{peerId: peerId},});
-        document.dispatchEvent(event);
-        
-    });
-    
-}
-
-
-//Refreshes online friends
-document.querySelector(".list-all-peers-button").addEventListener("click", () => {
-  
-    
-    const peersEl = document.querySelector('.peers');
-    peersEl.firstChild && peersEl.firstChild.remove();
-    peer.listAllPeers((peers) => {
-             
-        const ul = document.createElement('ul');
-        peers.filter((peerId)=>{
-            return peerId !== myPeerId ? true : false;
+        con.on('data', (data) => {
+            console.log(data);
         })
         
-            .forEach(peerId => {
-            
-                const li = document.createElement('li');
-                const button = document.createElement('button');
-                button.innerText = peerId;
-                button.className = "connect-button";
-                button.classList.add(`peerId-${peerId}`);
-                button.addEventListener('click', connectToPeerClick); 
-                li.appendChild(button);
-                ul.appendChild(li);
-            
-        }); 
-        peersEl.appendChild(ul);
+        // get remoteuser peerId
+        //const peerId = con.peer;
+        
+        //calls the peerChanged to show in list who's connected 
+        const event = new CustomEvent('peerChanged', {
+            detail: {
+                peerId: con.peer
+            },
+        });
+
+        document.dispatchEvent(event);
+    };
+
+    // Handles errors
+    const peerOnError = (error) => {
+        console.log(error)
+    };
+
+    // Get new user 
+    let myPeerId;
+    let getUser = () => {
+        let person = prompt("Please enter your name:", "Mr_Potatohead");
+        if (person == null || person == "") {
+            myPeerId = "Mr_Potatohead";
+        } else {
+            myPeerId = person;
+        }
+    }
+    document.addEventListener('load', getUser());
+
+    // Conect to peer server
+    peer = new Peer(myPeerId, {
+        host: "glajan.com",
+        port: 8443,
+        path: "/myapp",
+        secure: true,
+        config: {
+            iceServers: [
+                {
+                    url: ["stun:eu-turn7.xirsys.com"]
+                },
+                {
+                    username: "1FOoA8xKVaXLjpEXov-qcWt37kFZol89r0FA_7Uu_bX89psvi8IjK3tmEPAHf8EeAAAAAF9NXWZnbGFqYW4=",
+                    credential: "83d7389e-ebc8-11ea-a8ee-0242ac140004",
+                    url: "turn:eu-turn7.xirsys.com:80?transport=udp",
+        },
+      ],
+        },
     });
-});
-document.addEventListener('peerChanged',(e) => {
-    const peerId = e.detail.peerId;
-    //console.log("peerID = " + peerId);
-     
-    document.querySelectorAll('.connect-button').forEach((el) => {
-           el.classList.remove('connected');
+
+    // Handle Peer events
+    peer.on('open', peerOnOpen);
+    peer.on('error', peerOnError);
+    peer.on('connection', peerOnConnection);
+    
+
+    const connectToPeerClick = (el) => {
+
+        //get remote user ID
+        const peerId = el.target.textContent;
+        console.log(peerId);
+
+        //Test if con exits and the close it
+        con && con.close();
+
+        //Open connection to remote user
+        con = peer.connect(peerId);
+        con.on('open', () => {
+            console.log('con open');
+
+
+            //custom event
+            const event = new CustomEvent('peerChanged', {
+                detail: {
+                    peerId: peerId
+                },
+            });
+            document.dispatchEvent(event);
+
+        });
+
+    }
+    
+    
+    //Refreshes online friends
+    document.querySelector(".list-all-peers-button").addEventListener("click", () => {
+
+
+        const peersEl = document.querySelector('.peers');
+        peersEl.firstChild && peersEl.firstChild.remove();
+        peer.listAllPeers((peers) => {
+
+            const ul = document.createElement('ul');
+            peers.filter((peerId) => {
+                    return peerId !== myPeerId ? true : false;
+                })
+
+                .forEach(peerId => {
+
+                    const li = document.createElement('li');
+                    const button = document.createElement('button');
+                    button.innerText = peerId;
+                    button.className = "connect-button";
+                    button.classList.add(`peerId-${peerId}`);
+                    button.addEventListener('click', connectToPeerClick);
+                    li.appendChild(button);
+                    ul.appendChild(li);
+
+                });
+            peersEl.appendChild(ul);
+        });
     });
+
+    //when connecting to new peer
+    document.addEventListener('peerChanged', (e) => {
+        const peerId = e.detail.peerId;
+
+        //turns off all selected users
+        document.querySelectorAll('.connect-button.connected').forEach((el) => {
+            el.classList.remove('connected');
+        });
+
+        //turns on userbutton to selected
+        const conUser = document.querySelector(`.connect-button.peerId-${peerId}`);
+        conUser && conUser.classList.add('connected');
+
+    })
     
-    const conUser = document.querySelector(`.connect-button.peerId-${peerId}`);
-    
-    //document.querySelectorAll(`.connect-button peerId-${peerId}`).classList.add('connected');
-    //console.log(button);
-    conUser.classList.add('connected');
-    
-})    
+    //send new message button
+    document.querySelector('.send-new-message-button').addEventListener('click', () => {
+        //console.log("msg sent");
+        
+    });
+
 })();
