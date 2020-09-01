@@ -1,6 +1,6 @@
 /***********************************************************************
  * Author: Pellelito                                                    *
- * A simple videochat app, made for a class in Javascript aug-sept 2020 *
+ * A simple video/text chat app, made for a class in Javascript aug-sept 2020 *
  * Enjoy!!                                                              * 
  ************************************************************************/
 
@@ -26,8 +26,10 @@
         con && con.close();
         con = dataConnection;
         
+        // recive message
         con.on('data', (data) => {
-            console.log(data);
+            //console.log(data);
+            printMessage(data,'them');
         })
         
         // get remoteuser peerId
@@ -47,7 +49,20 @@
     const peerOnError = (error) => {
         console.log(error)
     };
-
+    
+    //Print message function
+    function printMessage(msg, writer){
+        const messageDiv = document.querySelector('.messages');
+        const newWrapDiv = document.createElement('div');
+        const newMsgDiv = document.createElement('div');
+        newMsgDiv.innerText = msg;
+        newWrapDiv.classList.add('message');
+        newWrapDiv.classList.add(writer);
+        newWrapDiv.appendChild(newMsgDiv);
+        messageDiv.appendChild(newWrapDiv);
+        
+    };
+    
     // Get new user 
     let myPeerId;
     let getUser = () => {
@@ -108,6 +123,11 @@
                 },
             });
             document.dispatchEvent(event);
+            
+             // recive message
+            con.on('data', (data) => {
+            printMessage(data,'them');
+            });
 
         });
 
@@ -160,7 +180,14 @@
     
     //send new message button
     document.querySelector('.send-new-message-button').addEventListener('click', () => {
+        
         //console.log("msg sent");
+        const msg = document.querySelector('.new-message').value;
+        con.send(msg);
+        document.querySelector('.new-message').value = "";
+        
+        printMessage(msg,'me');
+        //console.log(msg);
         
     });
 
