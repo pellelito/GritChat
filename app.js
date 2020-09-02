@@ -4,8 +4,6 @@
  * Enjoy!!                                                              * 
  ************************************************************************/
 
-
-
 //Self invoked anonymous function 
 (function () {
 
@@ -55,14 +53,19 @@
         const messageDiv = document.querySelector('.messages');
         const newWrapDiv = document.createElement('div');
         const newMsgDiv = document.createElement('div');
-        newMsgDiv.innerText = msg;
+        newMsgDiv.innerHTML= msg + "<br><i><small>Sent: "+ timeStamp() +"</small></i>";
         newWrapDiv.classList.add('message');
         newWrapDiv.classList.add(writer);
         newWrapDiv.appendChild(newMsgDiv);
         messageDiv.appendChild(newWrapDiv);
         
     };
-    
+    //Get time
+    function timeStamp(){
+        let d = new Date();
+        let time = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+        return time;
+    };
     // Get new user 
     let myPeerId;
     let getUser = () => {
@@ -177,18 +180,32 @@
         conUser && conUser.classList.add('connected');
 
     })
-    
-    //send new message button
-    document.querySelector('.send-new-message-button').addEventListener('click', () => {
+
+    //variables for sending msg
+    const sendButton = document.querySelector('.send-new-message-button');
+    const msgBox = document.querySelector('.new-message');
+
+    //calls sendButton click if enter is pressed
+    msgBox.addEventListener("keyup", function(event) {
         
-        //console.log("msg sent");
-        const msg = document.querySelector('.new-message').value;
+        if (event.keyCode === 13) {
+          
+          event.preventDefault();
+          // Trigger the button element with a click
+          sendButton.click();
+        }
+      });
+
+    //send new message button
+    sendButton.addEventListener('click', () => {
+        //console.log(clock.format(clock.now));
+        const msg = msgBox.value;
         con.send(msg);
         document.querySelector('.new-message').value = "";
-        
         printMessage(msg,'me');
-        //console.log(msg);
         
     });
 
+    //
+    
 })();
