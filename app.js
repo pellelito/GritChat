@@ -16,7 +16,6 @@
     document.querySelector(".my-peer-id").innerHTML = id;
   };
   const peerOnCall = (incomingCall) => {
-    if (confirm(`Answer videocall from ${incomingCall.peer}?` )){
 
     mediaConn && mediaConn.close();
     //anwering a call
@@ -26,8 +25,13 @@
         mediaConn = incomingCall;
         incomingCall.answer(myStream);
         mediaConn.on("stream", mediaConnOnStream);
+        
       });
-    }
+      const video = document.querySelector(".video-container.them");
+      const startButton = video.querySelector(".start");
+      const stopButton = video.querySelector(".stop");
+      startButton.classList.remove("active");
+      stopButton.classList.add("active");
   };
   //opens connection from remote user
   const peerOnConnection = (dataConnection) => {
@@ -104,18 +108,18 @@
     path: "/myapp",
     secure: true,
     config: {
-      iceServers: [
-        {
-          url: ["stun:eu-turn7.xirsys.com"],
-        },
-        {
-          username:
-            "1FOoA8xKVaXLjpEXov-qcWt37kFZol89r0FA_7Uu_bX89psvi8IjK3tmEPAHf8EeAAAAAF9NXWZnbGFqYW4=",
-          credential: "83d7389e-ebc8-11ea-a8ee-0242ac140004",
-          url: "turn:eu-turn7.xirsys.com:80?transport=udp",
-        },
-      ],
-    },
+ //     iceServers: [
+ //       {
+ //         url: ["stun:eu-turn7.xirsys.com"],
+ //       },
+ //       {
+ //         username:
+ //           "1FOoA8xKVaXLjpEXov-qcWt37kFZol89r0FA_7Uu_bX89psvi8IjK3tmEPAHf8EeAAAAAF9NXWZnbGFqYW4=",
+ //         credential: "83d7389e-ebc8-11ea-a8ee-0242ac140004",
+ //        url: "turn:eu-turn7.xirsys.com:80?transport=udp",
+ //     },
+ //     ],
+     },
   });
 
   // Handle Peer events
