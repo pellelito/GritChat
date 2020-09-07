@@ -16,7 +16,7 @@
     document.querySelector(".my-peer-id").innerHTML = id;
   };
   const peerOnCall = (incomingCall) => {
-    if (confirm("Answer videocall from " + con.peer +" ?" )){
+    if (confirm(`Answer videocall from ${incomingCall.peer}?` )){
 
     mediaConn && mediaConn.close();
     //anwering a call
