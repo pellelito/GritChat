@@ -20,7 +20,7 @@
     mediaConn && mediaConn.close();
     //anwering a call
     navigator.mediaDevices
-      .getUserMedia({ audio: false, video: true })
+      .getUserMedia({ audio: true, video: true })
       .then((myStream) => {
         mediaConn = incomingCall;
         incomingCall.answer(myStream);
@@ -151,7 +151,7 @@
     stopButton.classList.add("active");
 
     navigator.mediaDevices
-      .getUserMedia({ audio: false, video: true })
+      .getUserMedia({ audio: true, video: true })
       .then((myStream) => {
         mediaConn && mediaConn.close();
         mediaConn = peer.call(con.peer, myStream);
