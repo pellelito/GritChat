@@ -16,7 +16,6 @@
     document.querySelector(".my-peer-id").innerHTML = id;
   };
   const peerOnCall = (incomingCall) => {
-
     mediaConn && mediaConn.close();
     //anwering a call
     navigator.mediaDevices
@@ -25,13 +24,12 @@
         mediaConn = incomingCall;
         incomingCall.answer(myStream);
         mediaConn.on("stream", mediaConnOnStream);
-        
       });
-      const video = document.querySelector(".video-container.them");
-      const startButton = video.querySelector(".start");
-      const stopButton = video.querySelector(".stop");
-      startButton.classList.remove("active");
-      stopButton.classList.add("active");
+    const video = document.querySelector(".video-container.them");
+    const startButton = video.querySelector(".start");
+    const stopButton = video.querySelector(".stop");
+    startButton.classList.remove("active");
+    stopButton.classList.add("active");
   };
   //opens connection from remote user
   const peerOnConnection = (dataConnection) => {
@@ -107,19 +105,7 @@
     port: 8443,
     path: "/myapp",
     secure: true,
-    config: {
- //     iceServers: [
- //       {
- //         url: ["stun:eu-turn7.xirsys.com"],
- //       },
- //       {
- //         username:
- //           "1FOoA8xKVaXLjpEXov-qcWt37kFZol89r0FA_7Uu_bX89psvi8IjK3tmEPAHf8EeAAAAAF9NXWZnbGFqYW4=",
- //         credential: "83d7389e-ebc8-11ea-a8ee-0242ac140004",
- //        url: "turn:eu-turn7.xirsys.com:80?transport=udp",
- //     },
- //     ],
-     },
+    config: {},
   });
 
   // Handle Peer events
@@ -137,11 +123,13 @@
       video.srcObject = stream;
     });
 
+  // get remote user video
   const mediaConnOnStream = (theirStream) => {
     const video = document.querySelector(".video-container.them video");
     video.muted = true;
     video.srcObject = theirStream;
   };
+
   //Start video click handler
   const startVideoCallClick = (e) => {
     const video = document.querySelector(".video-container.them");
@@ -175,7 +163,7 @@
   document
     .querySelector(".video-container .stop")
     .addEventListener("click", stopVideoCallClick);
-  
+
   // On peer event
   const connectToPeerClick = (el) => {
     //get remote user ID
@@ -268,12 +256,9 @@
 
   //send new message button
   sendButton.addEventListener("click", () => {
-    
     const msg = msgBox.value;
     con.send(msg);
     document.querySelector(".new-message").value = "";
     printMessage(msg, "me");
   });
-
-  //
 })();
